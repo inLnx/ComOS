@@ -179,7 +179,7 @@
                 </div>
             </div>
             
-            <!-- Music Player App (Spotify) -->
+            <!-- Music Player App (Deezer) -->
             <div id="music-app" class="app-window w-[400px] h-[550px] top-[15%] left-[35%] bg-gray-100 rounded-lg shadow-2xl flex flex-col">
                 <div class="title-bar bg-gray-800 text-white p-2 rounded-t-lg flex items-center justify-between">
                     <span class="font-bold">Music</span>
@@ -187,18 +187,18 @@
                 </div>
                 <div class="p-4 flex-shrink-0">
                     <div class="flex space-x-2">
-                        <input id="spotify-search-input" type="text" placeholder="Search for a song..." class="flex-grow p-2 rounded-l-lg border-2 border-gray-300 focus:outline-none focus:border-purple-400">
-                        <button id="spotify-search-btn" class="bg-purple-500 text-white px-4 rounded-r-lg hover:bg-purple-600">Search</button>
+                        <input id="deezer-search-input" type="text" placeholder="Search for a song..." class="flex-grow p-2 rounded-l-lg border-2 border-gray-300 focus:outline-none focus:border-purple-400">
+                        <button id="deezer-search-btn" class="bg-purple-500 text-white px-4 rounded-r-lg hover:bg-purple-600">Search</button>
                     </div>
                 </div>
-                <div id="spotify-results" class="flex-grow overflow-y-auto p-4 space-y-2">
+                <div id="deezer-results" class="flex-grow overflow-y-auto p-4 space-y-2">
                     <!-- Search results will appear here -->
                 </div>
-                <div id="spotify-player-bar" class="p-2 bg-white border-t-2 flex-shrink-0">
-                     <audio id="spotify-audio-player" controls class="w-full"></audio>
+                <div id="deezer-player-bar" class="p-2 bg-white border-t-2 flex-shrink-0">
+                     <audio id="deezer-audio-player" controls class="w-full"></audio>
                      <div class="text-center mt-1">
-                         <p id="spotify-song-title" class="font-semibold truncate">No song selected</p>
-                         <p id="spotify-artist-name" class="text-sm text-gray-600 truncate">-</p>
+                         <p id="deezer-song-title" class="font-semibold truncate">No song selected</p>
+                         <p id="deezer-artist-name" class="text-sm text-gray-600 truncate">-</p>
                      </div>
                 </div>
             </div>
@@ -355,13 +355,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- DATA ---
             const APPS = {
-                'browser-app': { name: 'Web', icon: 'https://img.icons8.com/?size=100&id=QiwSMfboPt2R&format=png&color=000000', pinned: true },
-                'voice-assistant-app': { name: 'Assistant', icon: 'https://img.icons8.com/?size=100&id=byau012HFa7I&format=png&color=000000', pinned: true },
-                'music-app': { name: 'Music', icon: 'https://img.icons8.com/color/96/000000/apple-music.png', pinned: false },
-                'camera-app': { name: 'Camera', icon: 'https://img.icons8.com/?size=100&id=xZiTPdO57ltQ&format=png&color=000000', pinned: false },
-                'weather-app': { name: 'Weather', icon: 'https://img.icons8.com/?size=100&id=zIVmoh4T8wh7&format=png&color=000000', pinned: true },
-                'wallpapers-app': { name: 'Wallpapers', icon: 'https://img.icons8.com/?size=100&id=vBMbDIKFeeOB&format=png&color=000000', pinned: false },
-                'app-store': { name: 'App Store', icon: 'https://img.icons8.com/?size=100&id=4PbFeZOKAc61&format=png&color=000000', pinned: false },
+                'browser-app': { name: 'Web', icon: 'https://img.icons8.com/color/96/000000/chrome.png', pinned: true },
+                'voice-assistant-app': { name: 'Assistant', icon: 'https://img.icons8.com/color/96/000000/google-assistant.png', pinned: true },
+                'music-app': { name: 'Music', icon: 'https://img.icons8.com/color/96/000000/deezer.png', pinned: false },
+                'camera-app': { name: 'Camera', icon: 'https://img.icons8.com/color/96/000000/camera.png', pinned: false },
+                'weather-app': { name: 'Weather', icon: 'https://img.icons8.com/color/96/000000/partly-cloudy-day.png', pinned: true },
+                'wallpapers-app': { name: 'Wallpapers', icon: 'https://img.icons8.com/color/96/000000/image-file.png', pinned: false },
+                'app-store': { name: 'App Store', icon: 'https://img.icons8.com/fluency/96/000000/app-store.png', pinned: false },
                 'games-app': { name: 'Games', icon: 'https://img.icons8.com/color/96/000000/controller.png', pinned: false },
             };
 
@@ -595,6 +595,9 @@
                     micBtn.disabled = true;
                 }
                 
+                // Deezer Music App
+                initializeDeezerApp();
+
                 // Other Apps
                 const urlInput = document.getElementById('url-input');
                 const goBtn = document.getElementById('go-btn');
@@ -612,8 +615,7 @@
                 locationInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const loc = e.target.value.trim(); if(loc) { forecastDiv.innerHTML = `<p class="font-bold text-lg">${loc}</p><p class="text-4xl">${Math.floor(Math.random()*40+50)}°F</p><p>Sunny</p>`; } } });
                 wallpaperOptions.forEach(option => { option.addEventListener('click', () => { const bg = option.dataset.bg; if (bg.startsWith('url')) { desktop.style.backgroundImage = bg; desktop.style.backgroundColor = ''; } else { desktop.style.backgroundColor = bg; desktop.style.backgroundImage = ''; } }); });
             
-                // Game and Spotify Initializations
-                initializeSpotifyApp();
+                // Game Initializations
                 initializeSnakeGame();
                 initializePongGame();
                 initializeTicTacToeGame();
@@ -657,88 +659,64 @@
                 }
             }
 
-            // --- SPOTIFY LOGIC ---
-            const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID'; // <-- IMPORTANT: REPLACE WITH YOUR KEY
-            const SPOTIFY_CLIENT_SECRET = 'YOUR_SPOTIFY_CLIENT_SECRET'; // <-- IMPORTANT: REPLACE WITH YOUR KEY
-            let spotifyToken = '';
+            // --- DEEZER LOGIC ---
+            const DEEZER_PROXY_URL = 'https://cors-anywhere.herokuapp.com/https://api.deezer.com/search?q=';
 
-            async function getSpotifyToken() {
-                if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
-                    console.error("Spotify API keys are missing.");
-                    return null;
-                }
-                const response = await fetch('https://accounts.spotify.com/api/token', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Basic ' + btoa(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
-                    },
-                    body: 'grant_type=client_credentials'
-                });
-                const data = await response.json();
-                return data.access_token;
-            }
-
-            async function searchSpotify(query) {
-                if (!spotifyToken) {
-                    spotifyToken = await getSpotifyToken();
-                }
-                if (!spotifyToken) return []; // Don't search if we couldn't get a token
-                const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=20`, {
-                    headers: {
-                        'Authorization': `Bearer ${spotifyToken}`
+            async function searchDeezer(query) {
+                try {
+                    const response = await fetch(`${DEEZER_PROXY_URL}${encodeURIComponent(query)}`);
+                    if (!response.ok) {
+                        throw new Error(`Deezer API error: ${response.statusText}`);
                     }
-                });
-                if (response.status === 401) { // Token expired
-                    spotifyToken = await getSpotifyToken();
-                    return searchSpotify(query); // Retry with new token
+                    const data = await response.json();
+                    return data.data;
+                } catch (error) {
+                    console.error("Deezer search failed:", error);
+                    return [];
                 }
-                const data = await response.json();
-                return data.tracks.items;
             }
 
-            function initializeSpotifyApp() {
-                const searchBtn = document.getElementById('spotify-search-btn');
-                const searchInput = document.getElementById('spotify-search-input');
-                const resultsContainer = document.getElementById('spotify-results');
-                const audioPlayer = document.getElementById('spotify-audio-player');
-                const songTitleEl = document.getElementById('spotify-song-title');
-                const artistNameEl = document.getElementById('spotify-artist-name');
+            function initializeDeezerApp() {
+                const searchBtn = document.getElementById('deezer-search-btn');
+                const searchInput = document.getElementById('deezer-search-input');
+                const resultsContainer = document.getElementById('deezer-results');
+                const audioPlayer = document.getElementById('deezer-audio-player');
+                const songTitleEl = document.getElementById('deezer-song-title');
+                const artistNameEl = document.getElementById('deezer-artist-name');
 
                 searchBtn.addEventListener('click', async () => {
                     const query = searchInput.value;
                     if (!query) return;
                     resultsContainer.innerHTML = '<p>Searching...</p>';
-                    const tracks = await searchSpotify(query);
-                    displaySpotifyResults(tracks);
+                    const tracks = await searchDeezer(query);
+                    displayDeezerResults(tracks);
                 });
                 
                 searchInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') searchBtn.click();
                 });
 
-                function displaySpotifyResults(tracks) {
+                function displayDeezerResults(tracks) {
                     resultsContainer.innerHTML = '';
                     if (!tracks || tracks.length === 0) {
                         resultsContainer.innerHTML = '<p>No results found.</p>';
                         return;
                     }
                     tracks.forEach(track => {
-                        if (!track.preview_url) return; // Skip tracks without a preview
                         const trackEl = document.createElement('div');
                         trackEl.className = 'flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer';
                         trackEl.innerHTML = `
-                            <img src="${track.album.images[2]?.url || 'https://placehold.co/64'}" alt="Album Art" class="w-12 h-12 rounded-md mr-4">
+                            <img src="${track.album.cover_small}" alt="Album Art" class="w-12 h-12 rounded-md mr-4">
                             <div>
-                                <p class="font-semibold text-gray-800">${track.name}</p>
-                                <p class="text-sm text-gray-600">${track.artists.map(a => a.name).join(', ')}</p>
+                                <p class="font-semibold text-gray-800">${track.title}</p>
+                                <p class="text-sm text-gray-600">${track.artist.name}</p>
                             </div>
                         `;
                         trackEl.addEventListener('click', () => {
-                            audioPlayer.src = track.preview_url;
+                            audioPlayer.src = track.preview;
                             audioPlayer.play();
-                            songTitleEl.textContent = track.name;
-                            artistNameEl.textContent = track.artists.map(a => a.name).join(', ');
+                            songTitleEl.textContent = track.title;
+                            artistNameEl.textContent = track.artist.name;
                         });
                         resultsContainer.appendChild(trackEl);
                     });
