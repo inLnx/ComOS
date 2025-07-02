@@ -660,11 +660,13 @@
             }
 
             // --- DEEZER LOGIC ---
-            const DEEZER_PROXY_URL = 'https://api.deezer.com/search?q=';
-
             async function searchDeezer(query) {
+                // Using a reliable public CORS proxy to access the Deezer API from the browser.
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const searchUrl = `https://api.deezer.com/search?q=${encodeURIComponent(query)}`;
+                
                 try {
-                    const response = await fetch(`${DEEZER_PROXY_URL}${encodeURIComponent(query)}`);
+                    const response = await fetch(`${proxyUrl}${encodeURIComponent(searchUrl)}`);
                     if (!response.ok) {
                         throw new Error(`Deezer API error: ${response.statusText}`);
                     }
@@ -672,6 +674,8 @@
                     return data.data;
                 } catch (error) {
                     console.error("Deezer search failed:", error);
+                    const resultsContainer = document.getElementById('deezer-results');
+                    resultsContainer.innerHTML = `<p class="text-red-500 font-medium text-center">Could not fetch music. The API proxy may be down. Please try again later.</p>`;
                     return [];
                 }
             }
