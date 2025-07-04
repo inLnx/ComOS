@@ -666,7 +666,7 @@
                 if (!prompt) return;
                 try {
                     const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                    const apiKey = ""; 
+                    const apiKey = "AIzaSyC0iXmXyUU_rMXFLCF8T63_mUDIgzCl8Io"; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) throw new Error(`API error: ${response.statusText}`);
@@ -682,11 +682,10 @@
                 }
             }
 
-            // --- DEEZER LOGIC (FIXED WITH PROXY FALLBACK) ---
             async function searchDeezer(query) {
-                // List of CORS proxy templates. {URL} will be replaced with the encoded API URL.
+                
                 const PROXIES = [
-                    'https://api.allorigins.win/raw?url={URL}',
+                    // Worked in testing
                     'https://corsproxy.io/?{URL}',
                     'https://proxy.cors.sh/{URL}',
                     'https://cors-anywhere.herokuapp.com/{URL}'
@@ -704,7 +703,6 @@
                         const response = await fetch(requestUrl);
                         if (response.ok) {
                             const data = await response.json();
-                            // The actual content from allorigins is in a `contents` property
                             if (proxyTemplate.includes('allorigins')) {
                                 const parsedData = JSON.parse(data.contents);
                                 if (parsedData.data) {
@@ -726,8 +724,8 @@
                     }
                 }
 
-                // If all proxies fail, return an empty array.
                 console.error('All CORS proxies failed.');
+                alert("Deezer lookup failed")
                 return [];
             }
 
