@@ -119,13 +119,7 @@
             word-wrap: break-word; /* Breaks long words */
         }
         
-        /* Calculator button styles */
-        .calc-btn {
-            @apply bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded text-2xl;
-        }
-        .calc-btn.operator {
-            @apply bg-orange-500 hover:bg-orange-400;
-        }
+    
     </style>
 </head>
 <body class="bg-gray-800">
@@ -845,7 +839,7 @@
                         displayMusicResults(tracks);
                     } catch (error) {
                         console.error("Failed to search Deezer:", error);
-                        resultsContainer.innerHTML = '<p class="text-red-500 text-center">Failed to connect to the music service.</p>';
+                        resultsContainer.innerHTML = '<p class="text-red-500 text-center">Unable to search.</p>';
                     }
                 };
 
